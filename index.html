@@ -180,7 +180,7 @@ const PERFIL_LABELS = [
   ["Colérico","Sanguíneo","Melancólico","Flemático"]
 ];
 
-const SHEET_URL='https://script.google.com/macros/s/AKfycbx7qFG_tf-GVocxL5_tQIufqrWL_GILluEH_6YJWqt2KoeXOBH1vQIMh-zhr20IRt5J/exec';
+const SHEET_URL='PEGAR_URL_APPS_SCRIPT_AQUI';
 let cur=0,scores=[],lead={};
 
 function show(id){
@@ -370,26 +370,70 @@ function descargar(){
   const c=document.getElementById('radarCanvas');
   const ps=PILARES.map((_,i)=>pilarScore(i));
   const tmp=document.createElement('canvas');
-  tmp.width=500;tmp.height=560;
+  const W=500,H=600;
+  tmp.width=W;tmp.height=H;
   const ctx=tmp.getContext('2d');
-  ctx.fillStyle='#000';ctx.fillRect(0,0,500,560);
-  ctx.strokeStyle='#3A2E00';ctx.lineWidth=1;ctx.strokeRect(8,8,484,544);
-  ctx.strokeStyle='#C9A84C';ctx.lineWidth=0.5;ctx.strokeRect(12,12,476,536);
-  ctx.font='bold 11px sans-serif';ctx.fillStyle='#888';ctx.textAlign='center';
-  ctx.fillText('MENTORÍA IMPERIO DIGITAL',250,38);
-  ctx.font='bold 18px serif';ctx.fillStyle='#C9A84C';
-  ctx.fillText('Tu Diagnóstico de Negocio',250,62);
-  ctx.drawImage(c,90,75,320,320);
+
+  // Background
+  ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
+
+  // Outer border
+  ctx.strokeStyle='#3A2E00';ctx.lineWidth=1.5;ctx.strokeRect(6,6,W-12,H-12);
+  ctx.strokeStyle='#C9A84C';ctx.lineWidth=0.5;ctx.strokeRect(10,10,W-20,H-20);
+
+  // Logo image (top center)
+  const logoImg=document.querySelector('.logo-img');
+  try{
+    const logoAspect=logoImg.naturalWidth/logoImg.naturalHeight;
+    const logoW=160,logoH=logoW/logoAspect;
+    ctx.drawImage(logoImg,(W-logoW)/2,18,logoW,logoH);
+  }catch(e){
+    ctx.font='bold 10px sans-serif';ctx.fillStyle='#888';ctx.textAlign='center';
+    ctx.fillText('MENTORÍA IMPERIO DIGITAL',W/2,38);
+  }
+
+  // Gold divider line
+  ctx.strokeStyle='#C9A84C';ctx.lineWidth=0.5;
+  ctx.beginPath();ctx.moveTo(40,78);ctx.lineTo(W-40,78);ctx.stroke();
+
+  // Radar canvas (circular clip)
+  const radarSize=320;
+  const radarX=(W-radarSize)/2;
+  const radarY=86;
+  ctx.save();
+  ctx.beginPath();
+  ctx.arc(radarX+radarSize/2, radarY+radarSize/2, radarSize/2, 0, Math.PI*2);
+  ctx.clip();
+  ctx.drawImage(c, radarX, radarY, radarSize, radarSize);
+  ctx.restore();
+
+  // Gold circle border around radar
+  const grad=ctx.createLinearGradient(radarX,radarY,radarX+radarSize,radarY+radarSize);
+  grad.addColorStop(0,'#9A7A2E');grad.addColorStop(0.5,'#F0D080');grad.addColorStop(1,'#9A7A2E');
+  ctx.beginPath();
+  ctx.arc(radarX+radarSize/2, radarY+radarSize/2, radarSize/2-1, 0, Math.PI*2);
+  ctx.strokeStyle=grad;ctx.lineWidth=3;ctx.stroke();
+
+  // Score legend
   const lbls=['Modelo de negocio','Oferta y ventas','Visibilidad y autoridad','Sistemas y escala'];
   const clrs={red:'#E07070',yellow:'#C9A84C',green:'#50C050'};
   ctx.font='11px sans-serif';ctx.textAlign='left';
   ps.forEach((p,i)=>{
-    const x=i<2?30:260,y=420+(i%2)*22;
+    const x=i<2?30:262,y=424+(i%2)*22;
     ctx.fillStyle=clrs[nivel(p)];
     ctx.fillText('■ '+lbls[i]+' — '+nivelLabel(p),x,y);
   });
-  ctx.font='10px sans-serif';ctx.fillStyle='#444';ctx.textAlign='center';
-  ctx.fillText('Diagnóstico confidencial · imperiodigital.com',250,tmp.height-20);
+
+  // Gold divider
+  ctx.strokeStyle='#2A2000';ctx.lineWidth=0.5;
+  ctx.beginPath();ctx.moveTo(40,472);ctx.lineTo(W-40,472);ctx.stroke();
+
+  // Footer text
+  ctx.font='italic 10px serif';ctx.fillStyle='#C9A84C';ctx.textAlign='center';
+  ctx.fillText('* Análisis de resultados en llamada diagnóstico',W/2,490);
+  ctx.font='9px sans-serif';ctx.fillStyle='#444';
+  ctx.fillText('Diagnóstico confidencial · imperiodigital.com',W/2,508);
+
   const link=document.createElement('a');
   link.download='diagnostico-imperio-digital.png';
   link.href=tmp.toDataURL('image/png');
