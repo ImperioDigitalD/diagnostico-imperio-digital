@@ -180,7 +180,7 @@ const PERFIL_LABELS = [
   ["Colérico","Sanguíneo","Melancólico","Flemático"]
 ];
 
-const SHEET_URL='https://script.google.com/macros/s/AKfycbyizC0D7ozYCkBSq1K4rsRBqmit-pO4DGmFRl5jQStiRd_QC4dC1hkoidR6-w4IHhoy/exec';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbwIZEgZ2hRqu-bkmOeKGv_sovkc3Sl6kXq7VM52322VSh1c35jH3SfjeVZh7IHpFKtK/exec';
 let cur=0,scores=[],lead={};
 
 function show(id){
@@ -455,12 +455,23 @@ function enviarDatos(ps){
   const conteo={Colérico:0,Sanguíneo:0,Melancólico:0,Flemático:0};
   perfilTipos.forEach(t=>{if(conteo[t]!==undefined)conteo[t]++;});
   const perfilDominante=Object.entries(conteo).sort((a,b)=>b[1]-a[1])[0][0];
+  
+  // Individual scores per question (1=low, 3=mid, 5=high)
+  const qs = scores.slice(0,12);
+  
   const data={
     fecha:new Date().toLocaleString('es-MX'),
     nombre:lead.nombre,wa:lead.wa,email:lead.email,negocio:lead.negocio,
+    // Individual question scores
+    q1_1:qs[0],q1_2:qs[1],q1_3:qs[2],
+    q2_1:qs[3],q2_2:qs[4],q2_3:qs[5],
+    q3_1:qs[6],q3_2:qs[7],q3_3:qs[8],
+    q4_1:qs[9],q4_2:qs[10],q4_3:qs[11],
+    // Pillar averages
     p1_modelo:ps[0],p2_oferta:ps[1],p3_visibilidad:ps[2],p4_sistemas:ps[3],
     p1_nivel:nivelLabel(ps[0]),p2_nivel:nivelLabel(ps[1]),p3_nivel:nivelLabel(ps[2]),p4_nivel:nivelLabel(ps[3]),
     promedio:+((ps[0]+ps[1]+ps[2]+ps[3])/4).toFixed(2),
+    // Personality
     perf_idea:perfilResp[0],perf_crisis:perfilResp[1],perf_ventas:perfilResp[2],
     perf_trabajo:perfilResp[3],perf_decision:perfilResp[4],
     perfil_dominante:perfilDominante
