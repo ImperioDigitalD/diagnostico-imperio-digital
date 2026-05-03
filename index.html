@@ -370,9 +370,12 @@ function descargar(){
   const c=document.getElementById('radarCanvas');
   const ps=PILARES.map((_,i)=>pilarScore(i));
   const tmp=document.createElement('canvas');
+  const SCALE=3;
   const W=500,H=600;
-  tmp.width=W;tmp.height=H;
+  tmp.width=W*SCALE;tmp.height=H*SCALE;
+  tmp.style.width=W+'px';tmp.style.height=H+'px';
   const ctx=tmp.getContext('2d');
+  ctx.scale(SCALE,SCALE);
 
   // Background
   ctx.fillStyle='#000';ctx.fillRect(0,0,W,H);
