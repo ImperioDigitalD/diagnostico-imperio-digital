@@ -180,7 +180,7 @@ const PERFIL_LABELS = [
   ["Colérico","Sanguíneo","Melancólico","Flemático"]
 ];
 
-const SHEET_URL='https://script.google.com/macros/s/AKfycbx7qFG_tf-GVocxL5_tQIufqrWL_GILluEH_6YJWqt2KoeXOBH1vQIMh-zhr20IRt5J/exec';
+const SHEET_URL='https://script.google.com/macros/s/AKfycbyizC0D7ozYCkBSq1K4rsRBqmit-pO4DGmFRl5jQStiRd_QC4dC1hkoidR6-w4IHhoy/exec';
 let cur=0,scores=[],lead={};
 
 function show(id){
@@ -465,7 +465,8 @@ function enviarDatos(ps){
     perf_trabajo:perfilResp[3],perf_decision:perfilResp[4],
     perfil_dominante:perfilDominante
   };
-  fetch(SHEET_URL,{method:'POST',headers:{'Content-Type':'application/json'},body:JSON.stringify(data)}).catch(()=>{});
+  const encoded = encodeURIComponent(JSON.stringify(data));
+  fetch(SHEET_URL + '?data=' + encoded, {method:'GET'}).catch(()=>{});
 }
 </script>
 </body>
